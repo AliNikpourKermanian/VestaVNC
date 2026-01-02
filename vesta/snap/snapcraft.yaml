@@ -1,0 +1,61 @@
+name: vestavnc
+base: core22 # the base snap is the execution environment for this snap
+version: git
+summary: Open Source VNC client using HTML5 (WebSockets, Canvas)
+description: |
+  Open Source VNC client using HTML5 (WebSockets, Canvas).
+  vestavnc is both a VNC client JavaScript library as well as an
+  application built on top of that library. vestavnc runs well in any
+  modern browser including mobile browsers (iOS and Android).
+
+grade: stable
+confinement: strict
+
+parts:
+    vestavnc:
+        source: .
+        plugin: dump
+        organize:
+            utils/vestavnc_proxy: /
+        stage:
+            - vnc.html
+            - app
+            - core/**/*.js
+            - vendor/**/*.js
+            - vestavnc_proxy
+
+    vestavnc-deps:
+        plugin: nil
+        stage-packages:
+            - bash
+
+    svc-script:
+        source: snap/local
+        plugin: dump
+        stage:
+            - svc_wrapper.sh
+
+    svc-script-deps:
+        plugin: nil
+        stage-packages:
+            - bash
+            - jq
+
+    websockify:
+        source: https://github.com/vestavnc/websockify/archive/v0.13.0.tar.gz
+        plugin: python
+        stage-packages:
+            - python3-numpy
+
+hooks:
+    configure:
+        plugs: [network, network-bind]
+
+apps:
+    vestavnc:
+        command: ./vestavnc_proxy
+        plugs: [network, network-bind]
+    vestavncsvc:
+        command: ./svc_wrapper.sh
+        daemon: forking
+        plugs: [network, network-bind]

@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222.2 84.7% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84.7% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84.7% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 0 0% 0%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color-scheme: dark;
+    color: hsl(var(--foreground));
+  }
+
+  label,
+  span,
+  p,
+  .font-medium,
+  .text-foreground {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Force visible colors for select/option in native dropdowns */
+  select,
+  option {
+    color: black !important;
+    background-color: white !important;
+  }
+
+  .text-sm:not(select):not(option) {
+    color: hsl(var(--foreground)) !important;
+  }
+}
