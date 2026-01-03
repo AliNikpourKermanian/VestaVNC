@@ -145,8 +145,11 @@ fi
 echo "USB mounting complete. Check /media/USB_DRIVE"
 
 # Start USB / File Manager
-echo "Starting File Manager on port 6083..."
+echo# Start USB Manager (in background)
 python3 /usb_manager.py &
+
+# Start Browser Mount Bridge (in background)
+python3 /browser_mount.py > /var/log/browser_mount.log 2>&1 &
 
 # Start Vesta
 echo "Starting Vesta on port 6080..."

@@ -1,8 +1,151 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Folder, File, Download, ChevronLeft, RefreshCw, Upload, HardDrive, Plug } from "lucide-react"
+import { Folder, File, Download, ChevronLeft, RefreshCw, Upload, HardDrive, Plug, Laptop } from "lucide-react"
 import { FileEntry } from "@/hooks/useUSB"
 import { useEffect, useState, useRef } from "react"
+
+// --- Browser Bridge (File System Access API) ---
+
+class BrowserFS {
+    ws: WebSocket | null = null;
+    rootHandle: FileSystemDirectoryHandle | null = null;
+    isConnected = false;
+
+    constructor(onStatus: (status: boolean) => void) {
+        this.onStatus = onStatus;
+    }
+
+    onStatus: (status: boolean) => void;
+
+    async connect(handle: FileSystemDirectoryHandle) {
+        this.rootHandle = handle;
+        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const host = window.location.hostname;
+        // Port 6084 is hardcoded for browser bridge
+        const url = `${protocol}://${host}:6084`;
+
+        console.log("Connecting Bridge to:", url);
+        this.ws = new WebSocket(url);
+
+        this.ws.onopen = () => {
+            console.log("Bridge Connected");
+            this.isConnected = true;
+            this.onStatus(true);
+        };
+
+        this.ws.onclose = () => {
+            console.log("Bridge Disconnected");
+            this.isConnected = false;
+            this.onStatus(false);
+            this.ws = null;
+        };
+
+        this.ws.onerror = (e) => {
+            console.error("Bridge Error:", e);
+        }
+
+        this.ws.onmessage = async (event) => {
+            const msg = JSON.parse(event.data);
+            const { id, method, path, ...args } = msg;
+
+            try {
+                let result = null;
+                // Path comes as /name/sub/file.
+                // We need to traverse handles.
+                const relativePath = path === '/' ? '' : path.substring(1); // strip leading /
+
+                if (method === 'GETATTR') {
+                    // Check if file/dir exists
+                    try {
+                        const h = await this.getHandle(relativePath);
+                        const kind = h.kind;
+                        // Stat mock
+                        result = {
+                            st_mode: kind === 'directory' ? 16877 : 33188, // 0o40755 : 0o100644
+                            st_size: kind === 'file' ? await (h as FileSystemFileHandle).getFile().then(f => f.size) : 4096,
+                            st_mtime: Date.now() / 1000
+                        };
+                    } catch (e) {
+                        // Not found
+                        this.respond(id, { error: 'ENOENT' });
+                        return;
+                    }
+                } else if (method === 'READDIR') {
+                    const dir = await this.getHandle(relativePath) as FileSystemDirectoryHandle;
+                    const entries = [];
+                    // @ts-ignore
+                    for await (const [name] of (dir as any).entries()) {
+                        entries.push(name);
+                    }
+                    result = entries;
+                } else if (method === 'READ') {
+                    const fileHandle = await this.getHandle(relativePath) as FileSystemFileHandle;
+                    const file = await fileHandle.getFile();
+                    const folder = file.slice(args.offset, args.offset + args.length);
+                    const buffer = await folder.arrayBuffer();
+                    // Convert to Base64
+                    result = this.arrayBufferToBase64(buffer);
+                } else if (method === 'WRITE') {
+                    const fileHandle = await this.getHandle(relativePath) as FileSystemFileHandle;
+                    const writable = await fileHandle.createWritable({ keepExistingData: true });
+                    // Decode
+                    const data = Uint8Array.from(atob(args.data), c => c.charCodeAt(0));
+                    await writable.write({ type: 'write', position: args.offset, data: data });
+                    await writable.close();
+                    result = data.length;
+                } else if (method === 'CREATE') {
+                    // Get parent
+                    const parts = relativePath.split('/');
+                    const name = parts.pop();
+                    const parentPath = parts.join('/');
+                    const parent = await this.getHandle(parentPath) as FileSystemDirectoryHandle;
+                    await parent.getFileHandle(name!, { create: true });
+                    result = 0;
+                }
+
+                this.respond(id, { data: result });
+
+            } catch (e: any) {
+                console.error("FS Op Error:", e);
+                this.respond(id, { error: 'EIO' });
+            }
+        };
+    }
+
+    respond(id: string, payload: any) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify({ id, ...payload }));
+        }
+    }
+
+    async getHandle(path: string): Promise<FileSystemHandle> {
+        if (!path || path === '' || path === '.') return this.rootHandle!;
+        const parts = path.split('/').filter(p => p);
+        let current: any = this.rootHandle;
+
+        for (const part of parts) {
+            // Try dir then file
+            try {
+                current = await current.getDirectoryHandle(part);
+            } catch {
+                current = await current.getFileHandle(part);
+            }
+        }
+        return current;
+    }
+
+    arrayBufferToBase64(buffer: ArrayBuffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+    }
+}
+
+// ----------------
 
 interface FilesModalProps {
     open: boolean;
@@ -25,6 +168,10 @@ export function FilesModal({ open, onOpenChange, files, currentPath, loading, fe
     const fileInput = useRef<HTMLInputElement>(null);
     const [drives, setDrives] = useState<{ portable: any[], host: any[], internal: any[] }>({ portable: [], host: [], internal: [] });
     const [available, setAvailable] = useState<any[]>([]);
+
+    // Bridge State
+    const [bridgeStatus, setBridgeStatus] = useState(false);
+    const bridgeRef = useRef<BrowserFS | null>(null);
 
     // Initial load
     useEffect(() => {
@@ -49,6 +196,20 @@ export function FilesModal({ open, onOpenChange, files, currentPath, loading, fe
     const handleUnmount = async (device: any) => {
         const success = await unmountDevice(device.name);
         if (success) loadDrives();
+    };
+
+    const handleMountLocal = async () => {
+        try {
+            // @ts-ignore
+            const handle = await window.showDirectoryPicker();
+            if (!bridgeRef.current) {
+                bridgeRef.current = new BrowserFS(setBridgeStatus);
+            }
+            await bridgeRef.current.connect(handle);
+        } catch (e) {
+            console.error("Mount failed:", e);
+            alert("Mount failed or cancelled.");
+        }
     };
 
     const goBack = () => {
@@ -90,6 +251,15 @@ export function FilesModal({ open, onOpenChange, files, currentPath, loading, fe
                     <Button variant="outline" size="sm" onClick={() => fileInput.current?.click()}>
                         <Upload className="w-4 h-4 mr-2" /> Upload
                     </Button>
+                    <Button
+                        variant={bridgeStatus ? "default" : "outline"}
+                        size="sm"
+                        onClick={handleMountLocal}
+                        className={bridgeStatus ? "bg-green-600 hover:bg-green-700" : ""}
+                    >
+                        <Laptop className="w-4 h-4 mr-2" />
+                        {bridgeStatus ? "Local Drive Active" : "Mount Local Drive"}
+                    </Button>
                 </div>
 
                 <div className="flex gap-4 flex-1 overflow-hidden">
@@ -106,6 +276,11 @@ export function FilesModal({ open, onOpenChange, files, currentPath, loading, fe
                                         <span className="truncate">{d.label}</span>
                                     </div>
                                 ))}
+                                {/* Browser Mount Entry (Virtual) */}
+                                <div className="flex items-center gap-2 p-2 rounded hover:bg-white/5 cursor-pointer text-sm" onClick={() => fetchFiles('/mnt/browser')}>
+                                    <Laptop className={`w-4 h-4 ${bridgeStatus ? 'text-green-400' : 'text-gray-600'}`} />
+                                    <span className="truncate">Browser Bridge (/mnt/browser)</span>
+                                </div>
                                 {drives.host.map((d, i) => (
                                     <div key={i} className="flex items-center justify-between p-2 rounded hover:bg-white/5 border border-white/5 group">
                                         <div className="flex items-center gap-2 overflow-hidden cursor-pointer flex-1" onClick={() => fetchFiles(d.mountpoint)}>
@@ -205,3 +380,4 @@ export function FilesModal({ open, onOpenChange, files, currentPath, loading, fe
         </Dialog>
     )
 }
+

@@ -16,6 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     git \
     python3 \
     python3-numpy \
+    python3-pip \
     net-tools \
     curl \
     dbus-x11 \
@@ -24,6 +25,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     software-properties-common \
     gpg-agent \
     socat \
+    fuse \
+    libfuse2 \
     && add-apt-repository ppa:mozillateam/ppa -y \
     && echo 'Package: *' > /etc/apt/preferences.d/mozilla-firefox \
     && echo 'Pin: release o=LP-PPA-mozillateam' >> /etc/apt/preferences.d/mozilla-firefox \
@@ -35,7 +38,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     exfat-fuse \
     ntfs-3g \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && adduser root pulse-access
+    && adduser root pulse-access \
+    && pip3 install fusepy websockets
 
 # Copy local vestavnc (contains websockify now)
 COPY vesta /vesta
@@ -55,6 +59,10 @@ RUN dos2unix /start.sh && chmod +x /start.sh
 COPY usb_manager.py /usb_manager.py
 RUN dos2unix /usb_manager.py && chmod +x /usb_manager.py
 
+# Copy Browser Mount (FUSE Bridge)
+COPY vesta/browser_mount.py /browser_mount.py
+RUN dos2unix /browser_mount.py && chmod +x /browser_mount.py
+
 # Environment variables for VNC
 ENV DISPLAY=:1
 
@@ -63,6 +71,7 @@ EXPOSE 6080
 EXPOSE 6081
 EXPOSE 6082
 EXPOSE 6083
+EXPOSE 6084
 
 # Start
 CMD ["/start.sh"]
