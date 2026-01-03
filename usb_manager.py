@@ -212,7 +212,7 @@ class USBHandler(http.server.BaseHTTPRequestHandler):
 
     def is_path_safe(self, path):
         # Allow common root directories and external storage
-        allowed_prefixes = ['/root', '/media', '/.host_raw', '/host_mnt']
+        allowed_prefixes = ['/root', '/media', '/.host_raw', '/host_mnt', '/mnt/browser']
         return any(path.startswith(p) for p in allowed_prefixes)
 
     def list_files(self, mountpath):
