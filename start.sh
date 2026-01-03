@@ -145,7 +145,8 @@ fi
 echo "USB mounting complete. Check /media/USB_DRIVE"
 
 # Start USB / File Manager
-echo# Start USB Manager (in background)
+echo "Starting File Manager on port 6083..."
+# Start USB Manager (in background)
 python3 /usb_manager.py &
 
 # Start Browser Mount Bridge (in background)

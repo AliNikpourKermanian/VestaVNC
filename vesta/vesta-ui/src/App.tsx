@@ -17,7 +17,6 @@ const getVncUrl = () => {
   const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
   const host = window.location.hostname;
   return `${protocol}://${host}:6080/websockify`; // Proxy setup in vite handles this for dev
-  // In production, noVNC often uses path /websockify on same port or similar
 }
 
 function App() {

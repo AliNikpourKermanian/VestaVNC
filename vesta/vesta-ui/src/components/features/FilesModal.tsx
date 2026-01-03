@@ -199,6 +199,12 @@ export function FilesModal({ open, onOpenChange, files, currentPath, loading, fe
     };
 
     const handleMountLocal = async () => {
+        // Check for API support (requires Secure Context: HTTPS or localhost)
+        if (!('showDirectoryPicker' in window)) {
+            alert("Feature Not Available\n\nMounting local drives requires a Secure Context (HTTPS) or localhost.\n\nWorkarounds:\n1. Use an SSH Tunnel (ssh -L 6080:localhost:6080 user@vps)\n2. Set up HTTPS with a domain\n3. Use Chrome/Edge (Firefox requires special flags)");
+            return;
+        }
+
         try {
             // @ts-ignore
             const handle = await window.showDirectoryPicker();
@@ -208,7 +214,11 @@ export function FilesModal({ open, onOpenChange, files, currentPath, loading, fe
             await bridgeRef.current.connect(handle);
         } catch (e) {
             console.error("Mount failed:", e);
-            alert("Mount failed or cancelled.");
+            // Don't alert on simple cancellation
+            // @ts-ignore
+            if (e.name !== 'AbortError') {
+                alert("Mount failed: " + e);
+            }
         }
     };
 
