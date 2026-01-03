@@ -161,7 +161,6 @@ We're continuously improving. Planned enhancements include:
 
 - [ ] Multi-monitor support
 - [ ] WebRTC streaming option for reduced latency
-- [ ] Mobile applications for iOS and Android
 - [ ] Collaborative features with granular permissions
 - [ ] Extension system for custom integrations
 
