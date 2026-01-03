@@ -1,179 +1,187 @@
 # Why VestaVNC?
 
-## The Next Generation of Browser-Based Remote Desktop
+> **The Next Generation of Browser-Based Remote Desktop**
 
-VestaVNC represents a fundamental reimagining of what browser-based VNC should be. While other solutions focus on basic screen sharing, VestaVNC delivers a **complete desktop experience** with modern UI/UX, advanced file management, and innovative features that make remote work feel local.
-
----
-
-## 🎯 VestaVNC vs The Competition
-
-### **NoVNC** - The Legacy Standard
-**What NoVNC Does:**
-- Basic VNC viewer in the browser
-- Minimal UI with basic controls
-- No file transfer capabilities
-- No USB/drive mounting
-- Functional but dated interface
-
-**Why VestaVNC is Better:**
-- ✅ **Modern React-based UI** with glassmorphism and dark mode aesthetics
-- ✅ **Integrated file manager** with drag-and-drop upload/download
-- ✅ **USB drive mounting** - access host drives directly in the container
-- ✅ **Browser Bridge** - mount local folders from your laptop into remote VPS
-- ✅ **Bidirectional audio** - both microphone and speaker support
-- ✅ **Smart clipboard** with automatic sync
-- ✅ **KDE Plasma desktop** instead of basic window managers
-- ✅ **One-click deployment** with Docker
-
-**Verdict:** NoVNC is a viewer. VestaVNC is a **complete remote desktop platform**.
+VestaVNC represents a thoughtful reimagining of browser-based VNC technology. While other solutions provide effective screen sharing capabilities, VestaVNC offers a **comprehensive desktop experience** with modern UI/UX, advanced file management, and innovative features designed to make remote work feel seamless.
 
 ---
 
-### **KasmVNC** - The Enterprise Solution
-**What KasmVNC Does:**
-- Multi-user workspace management
-- Session recording and monitoring
-- Enterprise authentication (SSO, LDAP)
-- Container-based isolation
-- Admin dashboard for fleet management
+## 🎯 VestaVNC Compared to Other Solutions
 
-**Why VestaVNC is Better for Individual Users:**
-- ✅ **Zero complexity** - no admin panel, no user management overhead
-- ✅ **Instant setup** - `docker run` and you're done
-- ✅ **Lightweight** - no database, no orchestration layer
-- ✅ **Browser Bridge** - KasmVNC can't mount your local drives remotely
-- ✅ **Modern UI** - VestaVNC's interface is cleaner and more intuitive
-- ✅ **Open source & free** - no enterprise licensing required
-- ✅ **Better for developers** - optimized for single-user productivity, not fleet management
+### NoVNC - The Established Standard
 
-**Verdict:** KasmVNC is built for IT departments managing hundreds of users. VestaVNC is built for **developers who want a powerful personal remote desktop**.
+**What NoVNC Offers:**
+- Reliable VNC viewer in the browser
+- Straightforward UI with essential controls
+- Proven stability and wide adoption
+- Lightweight and functional
 
----
+**What VestaVNC Adds:**
+- ✅ Modern React-based interface with contemporary design aesthetics
+- ✅ Integrated file manager with drag-and-drop functionality
+- ✅ USB drive mounting - seamless access to host drives within containers
+- ✅ Browser Bridge - innovative local folder mounting from your device to remote VPS
+- ✅ Bidirectional audio - comprehensive microphone and speaker support
+- ✅ Intelligent clipboard with automatic synchronization
+- ✅ KDE Plasma desktop for a full-featured desktop environment
+- ✅ Streamlined deployment with Docker
 
-### **Selkies** - The Gaming-Focused Streamer
-**What Selkies Does:**
-- WebRTC-based streaming (lower latency)
-- GPU acceleration for gaming
-- Gamepad support
-- Optimized for high frame rates
-
-**Why VestaVNC is Better for Productivity:**
-- ✅ **File management** - Selkies has no integrated file transfer
-- ✅ **USB mounting** - Selkies can't access your host drives
-- ✅ **Browser Bridge** - revolutionary feature Selkies lacks entirely
-- ✅ **Simpler setup** - no WebRTC signaling server required
-- ✅ **Better for work** - VestaVNC prioritizes productivity over gaming
-- ✅ **Clipboard integration** - seamless copy/paste between local and remote
-- ✅ **Audio bidirectionality** - Selkies focuses on output, VestaVNC handles input too
-
-**Verdict:** Selkies is for gaming. VestaVNC is for **getting real work done**.
+> **Summary:** NoVNC provides solid core VNC functionality, while VestaVNC extends this foundation with modern productivity features for today's workflows.
 
 ---
 
-## 🚀 VestaVNC's Unique Advantages
+### KasmVNC - The Feature-Rich Alternative
 
-### 1. **Browser Bridge Technology**
-**Industry First:** Mount folders from your local machine directly into a remote VPS container.
+**What KasmVNC Offers:**
+- Advanced VNC capabilities with modern enhancements
+- Robust streaming technology
+- Container-based architecture
+- Well-established in professional environments
 
-- Your laptop's USB drive appears at `/mnt/browser` on the VPS
-- Uses File System Access API + FUSE filesystem
-- Works over HTTPS with SSH tunneling
-- No other VNC solution has this capability
+**What VestaVNC Offers for Individual Users:**
+- ✅ Simplified setup - focused on single-user productivity
+- ✅ Quick deployment - minimal configuration required
+- ✅ Efficient resource usage - streamlined architecture
+- ✅ Browser Bridge technology - unique local drive mounting capability
+- ✅ Contemporary interface - clean and intuitive design
+- ✅ Open source - fully accessible codebase
+- ✅ Developer-optimized - tailored for individual productivity workflows
 
-### 2. **Complete File Ecosystem**
-- **Integrated File Manager** with tree view and breadcrumbs
-- **Drag-and-drop uploads** directly to any directory
-- **One-click downloads** from the remote system
-- **USB drive detection** and mounting (Windows, Linux, macOS)
-- **Host drive access** - mount your PC's C:, D:, E: drives into the container
+> **Note:** For enterprise fleet management and multi-user environments, we recommend exploring **Netvesta SASE**, our upcoming solution designed specifically for those requirements.
 
-### 3. **Modern Developer Experience**
-- **KDE Plasma Desktop** - full-featured, not a toy WM
-- **Pre-installed Firefox** for web development
-- **Bidirectional audio** - record podcasts, join video calls
-- **Smart clipboard** - automatic sync, no manual copy/paste
-- **One-command deployment** - no YAML files, no Kubernetes
-
-### 4. **Beautiful, Intuitive UI**
-- **macOS-inspired design** with glassmorphism effects
-- **Dark mode by default** - easy on the eyes
-- **Responsive controls** - works on desktop, tablet, mobile
-- **Status indicators** - connection health, audio state, file operations
-- **Minimal learning curve** - everything is where you expect it
-
-### 5. **Production-Ready Out of the Box**
-- **Automatic VNC password** (default: `netvesta`)
-- **Audio routing** via PulseAudio + Socat
-- **Clipboard sync** without configuration
-- **USB auto-detection** on container start
-- **Graceful error handling** with user-friendly messages
+> **Summary:** KasmVNC excels in its domain, while VestaVNC focuses on empowering individual developers and remote workers with streamlined personal desktop access.
 
 ---
 
-## 📊 Feature Comparison Matrix
+### Selkies - The Performance-Oriented Streamer
+
+**What Selkies Offers:**
+- WebRTC-based streaming technology
+- GPU acceleration capabilities
+- Optimized for low-latency scenarios
+- Advanced multimedia performance
+
+**What VestaVNC Offers for Productivity Workflows:**
+- ✅ Comprehensive file management - integrated file transfer and organization
+- ✅ USB mounting capabilities - direct host drive access
+- ✅ Browser Bridge technology - innovative feature for local-remote integration
+- ✅ Straightforward configuration - simplified setup process
+- ✅ Productivity-focused design - optimized for development and work scenarios
+- ✅ Enhanced clipboard integration - seamless data transfer between environments
+- ✅ Full audio bidirectionality - complete input and output support
+
+> **Summary:** Selkies excels for multimedia and gaming scenarios, while VestaVNC prioritizes professional productivity and development workflows.
+
+---
+
+## 🚀 VestaVNC's Distinctive Features
+
+### 1. Browser Bridge Technology
+
+> **Innovative Approach:** Mount folders from your local machine directly into remote VPS containers.
+
+- Access your laptop's drives at `/mnt/browser` on the VPS
+- Leverages File System Access API with FUSE filesystem integration
+- Secure operation over HTTPS with SSH tunneling
+- A unique capability in the VNC ecosystem
+
+### 2. Comprehensive File Management
+
+- **Integrated File Manager** with intuitive tree view and navigation
+- **Drag-and-drop uploads** to any directory
+- **Streamlined downloads** from remote systems
+- **USB drive detection** and mounting across platforms
+- **Host drive access** - integrate your local storage with remote environments
+
+### 3. Modern Development Environment
+
+- **KDE Plasma Desktop** - comprehensive and feature-rich
+- **Pre-configured Firefox** for web development workflows
+- **Bidirectional audio** - support for calls, recording, and multimedia
+- **Intelligent clipboard** - automatic synchronization across environments
+- **Simple deployment** - straightforward Docker-based setup
+
+### 4. Polished User Interface
+
+- **Contemporary design** with modern visual aesthetics
+- **Dark mode** - comfortable for extended use
+- **Responsive controls** - compatible with various devices
+- **Clear status indicators** - connection health, audio state, and operation feedback
+- **Intuitive navigation** - familiar interface patterns
+
+### 5. Ready for Immediate Use
+
+- **Pre-configured authentication** (default: `netvesta`)
+- **Audio routing** via PulseAudio and Socat
+- **Automatic clipboard sync** without manual configuration
+- **USB auto-detection** at container initialization
+- **User-friendly error handling** with clear messaging
+
+---
+
+## 📊 Feature Comparison Overview
 
 | Feature | VestaVNC | NoVNC | KasmVNC | Selkies |
 |---------|----------|-------|---------|---------|
-| **Modern UI** | ✅ React + Tailwind | ❌ Vanilla JS | ⚠️ Basic | ⚠️ Gaming-focused |
-| **File Manager** | ✅ Full-featured | ❌ None | ⚠️ Basic | ❌ None |
+| **Modern UI** | ✅ React + Tailwind | ⚠️ Functional | ✅ Yes | ✅ Yes |
+| **File Manager** | ✅ Full-featured | ❌ Not included | ⚠️ Basic | ❌ Not included |
 | **USB Mounting** | ✅ Yes | ❌ No | ❌ No | ❌ No |
 | **Browser Bridge** | ✅ Yes | ❌ No | ❌ No | ❌ No |
-| **Bidirectional Audio** | ✅ Mic + Speaker | ❌ No | ⚠️ Output only | ⚠️ Output only |
-| **Clipboard Sync** | ✅ Automatic | ⚠️ Manual | ✅ Yes | ✅ Yes |
-| **Desktop Environment** | ✅ KDE Plasma | ⚠️ Basic WM | ⚠️ XFCE | ⚠️ Varies |
-| **Setup Complexity** | ✅ One command | ✅ Simple | ❌ Complex | ❌ Complex |
-| **Multi-user** | ❌ Single | ❌ Single | ✅ Yes | ⚠️ Limited |
-| **GPU Acceleration** | ❌ No | ❌ No | ⚠️ Limited | ✅ Yes |
-| **WebRTC Streaming** | ❌ No | ❌ No | ⚠️ Optional | ✅ Yes |
-| **License** | ✅ MIT | ✅ MPL 2.0 | ⚠️ GPL/Enterprise | ✅ Apache 2.0 |
+| **Bidirectional Audio** | ✅ Full support | ❌ No | ⚠️ Output only | ⚠️ Output only |
+| **Clipboard Sync** | ✅ Automatic | ⚠️ Manual | ✅ Automatic | ✅ Automatic |
+| **Desktop Environment** | ✅ KDE Plasma | ⚠️ Varies | ⚠️ Varies | ⚠️ Varies |
+| **Setup Complexity** | ✅ Minimal | ✅ Simple | ⚠️ Moderate | ⚠️ Moderate |
+| **GPU Acceleration** | ⚠️ Roadmap | ❌ No | ⚠️ Available | ✅ Yes |
+| **WebRTC Streaming** | ⚠️ Planned | ❌ No | ⚠️ Optional | ✅ Yes |
+| **License** | ✅ MIT | ✅ MPL 2.0 | ⚠️ GPL/Commercial | ✅ Apache 2.0 |
 
 ---
 
-## 🎯 Who Should Use VestaVNC?
+## 🎯 Who Benefits Most from VestaVNC?
 
-### ✅ Perfect For:
-- **Developers** who need a full Linux desktop on any device
-- **Remote workers** who want seamless file access between local and remote
+### ✅ Ideal For:
+
+- **Developers** seeking a complete Linux desktop accessible from any device
+- **Remote professionals** requiring seamless file access across environments
 - **System administrators** managing personal VPS instances
-- **Students** learning Linux without dual-booting
-- **Privacy-conscious users** who want self-hosted remote access
-- **Travelers** who need their desktop environment anywhere
+- **Students** exploring Linux without hardware commitment
+- **Privacy-focused users** preferring self-hosted solutions
+- **Mobile professionals** needing consistent desktop access while traveling
 
-### ⚠️ Not Ideal For:
-- **Enterprise IT teams** managing 100+ users (use KasmVNC)
-- **Gamers** needing 60+ FPS streaming (use Selkies)
-- **Teams needing session recording** for compliance (use KasmVNC)
+### 📝 Alternative Recommendations:
 
----
-
-## 🔮 The Future of VestaVNC
-
-We're just getting started. Upcoming features:
-- **Multi-monitor support**
-- **WebRTC option** for lower latency
-- **Mobile app** for iOS/Android
-- **Collaborative sessions** (screen sharing with permissions)
-- **Plugin system** for custom integrations
+- **Enterprise teams** with complex multi-user requirements may want to consider our upcoming **Netvesta SASE** solution, specifically designed for organizational needs
+- **Gaming and high-FPS streaming** needs are well-served by Selkies' specialized approach
 
 ---
 
-## 💡 The Bottom Line
+## 🔮 VestaVNC Roadmap
 
-**NoVNC** is a tool from 2010.  
-**KasmVNC** is for enterprises.  
-**Selkies** is for gamers.  
+We're continuously improving. Planned enhancements include:
 
-**VestaVNC** is for **developers who demand more**.
+- [ ] Multi-monitor support
+- [ ] WebRTC streaming option for reduced latency
+- [ ] Mobile applications for iOS and Android
+- [ ] Collaborative features with granular permissions
+- [ ] Extension system for custom integrations
 
-It's the only solution that combines:
-- Modern UI/UX
-- Complete file management
-- Revolutionary Browser Bridge
-- Production-ready simplicity
-- True desktop experience
+---
 
-Try it once, and you'll never go back.
+## 💡 In Summary
+
+VestaVNC offers a modern, feature-rich approach to browser-based remote desktop access, with particular strengths in:
+
+- Contemporary UI/UX design
+- Comprehensive file management
+- Innovative Browser Bridge technology
+- Streamlined deployment
+- Complete desktop experience
+
+We believe it represents an excellent choice for individual developers and remote professionals seeking a powerful, personal remote desktop solution.
+
+---
+
+## 🚀 Quick Start
 
 ```bash
 docker run -d --privileged \
@@ -182,8 +190,15 @@ docker run -d --privileged \
   alinikpourkermanian/vestavnc:latest
 ```
 
-Open `http://localhost:6080` and experience the future of remote desktop.
+Access at `http://localhost:6080` to explore VestaVNC's capabilities.
 
 ---
 
+<div align="center">
+
 **VestaVNC** - *Your Desktop, Anywhere.*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://hub.docker.com/r/alinikpourkermanian/vestavnc)
+
+</div>
