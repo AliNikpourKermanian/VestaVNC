@@ -4,6 +4,8 @@
 
 Welcome to VestaVNC! This project brings the power of a full Linux desktop environment to your browser, wrapped in a sleek, modern interface inspired by macOS design principles. Whether you're learning about containerization, remote desktop protocols, or just need a portable development environment, VestaVNC has you covered.
 
+*Be aware in order to use microphone you need run this code/docker image on localhost or run it under https protocol*
+
 ---
 
 ## 📖 Table of Contents
