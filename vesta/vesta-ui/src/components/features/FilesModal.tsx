@@ -201,7 +201,7 @@ export function FilesModal({ open, onOpenChange, files, currentPath, loading, fe
     const handleMountLocal = async () => {
         // Check for API support (requires Secure Context: HTTPS or localhost)
         if (!('showDirectoryPicker' in window)) {
-            alert("Feature Not Available\n\nMounting local drives requires a Secure Context (HTTPS) or localhost.\n\nWorkarounds:\n1. Use an SSH Tunnel (ssh -L 6080:localhost:6080 user@vps)\n2. Set up HTTPS with a domain\n3. Use Chrome/Edge (Firefox requires special flags)");
+            alert("Feature Not Available\n\nMounting local drives requires a Secure Context (HTTPS) or localhost.\n\nWorkarounds:\n1. Use an SSH Tunnel (ssh -L 6080:localhost:6080 -L 6081:localhost:6081 -L 6082:localhost:6082 -L 6083:localhost:6083 -L 6084:localhost:6084 YOUR_VPS_USERNAME@YOUR_VPS_IP)\n2. Set up HTTPS with a domain\n3. Use Chrome/Edge (Firefox requires special flags)");
             return;
         }
 
