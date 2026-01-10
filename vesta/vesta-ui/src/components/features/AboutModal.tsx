@@ -83,7 +83,7 @@ export function AboutModal({ open, onOpenChange, view }: AboutModalProps) {
                                 </div>
                                 <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
                                     <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 block mb-1">Environment</span>
-                                    <span className="text-sm font-semibold">Development (VestaOS)</span>
+                                    <span className="text-sm font-semibold">KDE Plasma (Linux)</span>
                                 </div>
                             </div>
                         )}
