@@ -137,7 +137,7 @@ The easiest way to get started is to pull our pre-made image:
 ```bash
 docker pull alinikpourkermanian/vestavnc:latest
 docker run -it --rm --privileged \
-  -p 6080:6080 -p 6081:6081 -p 6082:6082 -p 6083:6083 \
+  -p 6080:6080 -p 6081:6081 -p 6082:6082 -p 6083:6083 -p 6084:6084 \
   -v /dev:/dev \
   alinikpourkermanian/vestavnc:latest
 ```
