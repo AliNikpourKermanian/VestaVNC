@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 
 export const useAudio = () => {
     const [micActive, setMicActive] = useState(false);
-    const [speakerActive, setSpeakerActive] = useState(false);
+    const [speakerActive, setSpeakerActive] = useState(true); // Default to enabled
 
     // Refs to hold instances
     const micRef = useRef<{ ws: WebSocket | null, context: AudioContext | null, stream: MediaStream | null }>({ ws: null, context: null, stream: null });

@@ -30,7 +30,7 @@ export const useVNC = (container: HTMLDivElement | null, url: string, password?:
         shared: true
     });
 
-    const connect = useCallback(() => {
+    const connect = useCallback((overridePassword?: string) => {
         if (!container || !url) return;
 
         if (rfbModel.current) {
@@ -41,7 +41,7 @@ export const useVNC = (container: HTMLDivElement | null, url: string, password?:
             setState(s => ({ ...s, status: 'connecting', error: null }));
 
             const rfb = new RFB(container, url, {
-                credentials: { password: password || 'netvesta' },
+                credentials: { password: overridePassword || password || 'netvesta' },
                 shared: settings.shared,
             });
 
@@ -65,6 +65,12 @@ export const useVNC = (container: HTMLDivElement | null, url: string, password?:
             });
 
             rfb.addEventListener('clipboard', (e: any) => {
+                // Native Sync (might require focus)
+                if (navigator.clipboard && e.detail.text) {
+                    navigator.clipboard.writeText(e.detail.text).catch(err => {
+                        console.warn("Clipboard write failed (focus?)", err);
+                    });
+                }
                 // Expose clipboard event if needed
                 window.dispatchEvent(new CustomEvent('vnc-clipboard', { detail: { text: e.detail.text } }));
             });
@@ -111,8 +117,35 @@ export const useVNC = (container: HTMLDivElement | null, url: string, password?:
     // Auto-connect on mount if URL provided
     useEffect(() => {
         connect();
+
+        // Native Clipboard Integration
+        const handlePaste = (e: ClipboardEvent) => {
+            const text = e.clipboardData?.getData('text');
+            if (text && rfbModel.current) {
+                rfbModel.current.clipboardPasteFrom(text);
+            }
+        };
+
+        const handleKeyDown = async (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if (text && rfbModel.current) {
+                        rfbModel.current.clipboardPasteFrom(text);
+                    }
+                } catch (err) {
+                    // Fallback to paste event (handled above)
+                }
+            }
+        };
+
+        window.addEventListener('paste', handlePaste);
+        window.addEventListener('keydown', handleKeyDown);
+
         return () => {
             rfbModel.current?.disconnect();
+            window.removeEventListener('paste', handlePaste);
+            window.removeEventListener('keydown', handleKeyDown);
         }
     }, [connect]);
 

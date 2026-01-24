@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Generate Runtime Configuration (Injected from Docker ENV)
+echo "Generating runtime configuration..."
+mkdir -p /vesta/assets
+cat <<EOF > /vesta/assets/config.js
+window.VESTA_CONFIG = {
+  toolkitDisable: ${TOOLKIT_DISABLE:-false},
+  vncName: "${VNC_NAME:-VestaVNC}"
+};
+EOF
+
+# Ensure vnc.html exists (fix for volume mount shadowing Dockerfile symlink)
+ln -sf /vesta/index.html /vesta/vnc.html
+
 # Set password for VNC
 mkdir -p ~/.vnc
 echo "${VNC_PASSWORD:-netvesta}" | vncpasswd -f > ~/.vnc/passwd
@@ -152,13 +165,16 @@ python3 /usb_manager.py &
 # Start Browser Mount Bridge (in background)
 python3 /browser_mount.py > /var/log/browser_mount.log 2>&1 &
 
+# Start WebRTC Streamer (Disabled)
+# python3 /vesta/webrtc_streamer.py > /var/log/webrtc_streamer.log 2>&1 &
+
 # Start Vesta
 echo "Starting Vesta on port 6080..."
 /vesta/utils/novnc_proxy --vnc 127.0.0.1:5901 --listen 0.0.0.0:6080 --web /vesta &
 NOVNC_PID=$!
 
 echo "-------------------------------------------------------"
-echo "READY! Use: http://localhost:6080/vnc.html"
+echo "READY! Use: http://localhost:6080/"
 echo "-------------------------------------------------------"
 
 wait $NOVNC_PID

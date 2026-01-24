@@ -3,7 +3,7 @@ import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { VncSettings } from "@/hooks/useVNC"
-import { Volume2, Mic } from "lucide-react"
+import { Volume2, Mic, Zap } from "lucide-react"
 
 interface SettingsModalProps {
     open: boolean;
@@ -18,7 +18,9 @@ interface SettingsModalProps {
     mic: {
         active: boolean; // boolean
         toggleMic: () => void;
-    }
+        passwordEnabled: boolean;
+        togglePassword: () => void;
+    };
 }
 
 export function SettingsModal({ open, onOpenChange, settings, updateSettings, audio, mic }: SettingsModalProps) {
@@ -68,6 +70,17 @@ export function SettingsModal({ open, onOpenChange, settings, updateSettings, au
                             min={0} max={9} step={1}
                             onValueChange={(v) => updateSettings({ compression: v[0] })}
                         />
+                    </div>
+
+                    <div className="border-t border-white/10 my-2"></div>
+
+                    {/* Password Protection */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 flex items-center justify-center">🔐</div>
+                            <label className="text-sm font-medium text-foreground">Password Protection</label>
+                        </div>
+                        <Switch checked={mic.passwordEnabled} onCheckedChange={mic.togglePassword} />
                     </div>
 
                     <div className="border-t border-white/10 my-2"></div>

@@ -12,9 +12,27 @@ PORT = 6083
 # Global Settings
 SETTINGS = {
     'usb_passthrough': False,  # Deprecated in favor of MOUNTED_PATHS
-    'auto_mount': False        # Disabled by default
+    'auto_mount': False,       # Disabled by default
+    'password_enabled': False  # Password protection status
 }
 MOUNTED_PATHS = set()
+
+# Helper to set system password
+def set_system_password(password):
+    try:
+        # 1. Update VNC Password
+        # pipe password to vncpasswd
+        p1 = subprocess.Popen(['vncpasswd', '-f'], stdin=subprocess.PIPE, stdout=open(os.path.expanduser('~/.vnc/passwd'), 'wb'))
+        p1.communicate(input=password.encode())
+        
+        # 2. Update System Root Password
+        # echo "root:password" | chpasswd
+        p2 = subprocess.Popen(['chpasswd'], stdin=subprocess.PIPE)
+        p2.communicate(input=f"root:{password}".encode())
+        return True
+    except Exception as e:
+        print(f"Password update failed: {e}", flush=True)
+        return False
 
 class USBHandler(http.server.BaseHTTPRequestHandler):
     def log_message(self, format, *args):
@@ -86,6 +104,10 @@ class USBHandler(http.server.BaseHTTPRequestHandler):
                 self.upload_file(query.get('path', ['/root/Desktop'])[0])
             elif path == '/api/settings':
                 self.update_settings()
+            elif path == '/api/password':
+                self.update_password()
+            elif path == '/api/password_disable':
+                self.disable_password()
             else:
                 self.send_error(404, "Not Found")
         except Exception as e:
@@ -513,6 +535,38 @@ class USBHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(SETTINGS).encode())
         except: self.send_json_error(400, "Invalid")
+
+    def update_password(self):
+        try:
+            l = int(self.headers['Content-Length'])
+            d = json.loads(self.rfile.read(l))
+            password = d.get('password')
+            if not password:
+                self.send_json_error(400, "Password required")
+                return
+            
+            if set_system_password(password):
+                SETTINGS['password_enabled'] = True
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(json.dumps({'status': 'ok'}).encode())
+            else:
+                self.send_json_error(500, "Failed to set password")
+        except Exception as e:
+            self.send_json_error(500, str(e))
+
+    def disable_password(self):
+        try:
+            # Reset to default 'netvesta'
+            if set_system_password('netvesta'):
+                SETTINGS['password_enabled'] = False
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(json.dumps({'status': 'ok'}).encode())
+            else:
+                self.send_json_error(500, "Failed to reset password")
+        except Exception as e:
+            self.send_json_error(500, str(e))
 
 if __name__ == '__main__':
     print(f"Starting File Manager on port {PORT}...", flush=True)

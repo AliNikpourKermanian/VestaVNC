@@ -1,11 +1,14 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Dock } from '@/components/layout/Dock'
 import { TopBar } from '@/components/layout/TopBar'
 import { VncScreen } from '@/components/layout/VncScreen'
+import { StatsOverlay } from '@/components/layout/StatsOverlay'
 import { SettingsModal } from '@/components/features/SettingsModal'
 import { FilesModal } from '@/components/features/FilesModal'
 import { ClipboardModal } from '@/components/features/ClipboardModal'
 import { AboutModal, AboutView } from '@/components/features/AboutModal'
+import { HelpModal } from '@/components/features/HelpModal'
+import { PasswordModal } from '@/components/features/PasswordModal'
 import { useVNC } from '@/hooks/useVNC'
 import { useAudio } from '@/hooks/useAudio'
 import { useUSB } from '@/hooks/useUSB'
@@ -19,10 +22,13 @@ const getVncUrl = () => {
   return `${protocol}://${host}:6080/websockify`; // Proxy setup in vite handles this for dev
 }
 
+
 function App() {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
-  const [modal, setModal] = useState<null | 'settings' | 'files' | 'clipboard' | 'about'>(null);
+  const [modal, setModal] = useState<null | 'settings' | 'files' | 'clipboard' | 'about' | 'password_set' | 'password_login' | 'help'>(null);
   const [aboutView, setAboutView] = useState<AboutView>('info');
+  const [statsVisible, setStatsVisible] = useState(false);
+  const [loginPassword, setLoginPassword] = useState(""); // For inline login
 
   // Determine API URL (FileManager/USB)
   const getApiUrl = () => {
@@ -36,10 +42,24 @@ function App() {
     return `${protocol}//${hostname}:6083/api`;
   }
 
+
   // Initialize Hooks
   const vnc = useVNC(container, getVncUrl(), 'netvesta'); // Explicitly pass password
   const audio = useAudio();
   const usb = useUSB(getApiUrl());
+
+  // Update Title & Favicon from Config
+  useEffect(() => {
+    const config = (window as any).VESTA_CONFIG;
+    if (config?.vncName) {
+      document.title = config.vncName;
+    }
+    if (config?.toolkitDisable) {
+      // Hide Favicon (set to transparent pixel)
+      const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      if (link) link.href = 'data:image/x-icon;base64,';
+    }
+  }, []);
 
   // Handle Fullscreen
   const toggleFullscreen = () => {
@@ -50,11 +70,19 @@ function App() {
     }
   }
 
+  // Handle Stats Toggle
+  const toggleStats = () => {
+    setStatsVisible(prev => !prev);
+  }
 
   return (
     <div className="dark relative w-screen h-screen overflow-hidden bg-black text-white selection:bg-blue-500/30">
       {/* Core VNC Canvas */}
-      <VncScreen ref={setContainer} />
+      <div className="relative w-full h-full">
+        <div className="absolute inset-0 z-10">
+          <VncScreen ref={setContainer} />
+        </div>
+      </div>
 
       {/* Status Pill & Vesta Menu */}
       <TopBar
@@ -64,15 +92,32 @@ function App() {
         onInfo={() => { setAboutView('info'); setModal('about'); }}
       />
 
-      {/* Reconnect Overlay */}
+      {/* Reconnect / Login Overlay */}
       {vnc.state.status === 'disconnected' && (
         <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="text-center space-y-4">
-            <h2 className="text-xl font-medium text-white/80">Disconnected</h2>
+          <div className="text-center space-y-4 max-w-sm w-full p-6">
+            <h2 className="text-xl font-medium text-white/80">
+              {(vnc.state.error === 'Password required' || vnc.state.error?.includes("Authentication failure") || vnc.state.error?.includes("Connection closed") || usb.passwordEnabled)
+                ? "Login Required"
+                : "Disconnected"}
+            </h2>
             <p className="text-sm text-white/50">{vnc.state.error || "Connection lost"}</p>
-            <Button onClick={vnc.connect} variant="outline" className="border-white/20 hover:bg-white/10">
-              Reconnect
-            </Button>
+
+            <form onSubmit={(e) => { e.preventDefault(); vnc.connect(loginPassword); }} className="space-y-3">
+              <div className="relative">
+                <input
+                  type="password"
+                  placeholder="Password (if set)"
+                  className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                  value={loginPassword}
+                  onChange={e => setLoginPassword(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                Reconnect / Login
+              </Button>
+            </form>
           </div>
         </div>
       )}
@@ -84,6 +129,10 @@ function App() {
         onSettings={() => setModal('settings')}
         onDisconnect={vnc.disconnect}
         onFullscreen={toggleFullscreen}
+        onStats={toggleStats}
+        onPassword={() => setModal('password_set')}
+        onHelp={() => setModal('help')}
+        passwordEnabled={usb.passwordEnabled}
       />
 
       {/* Modals */}
@@ -99,7 +148,15 @@ function App() {
         }}
         mic={{
           active: audio.micActive,
-          toggleMic: audio.micActive ? audio.stopMic : () => audio.startMic()
+          toggleMic: audio.micActive ? audio.stopMic : () => audio.startMic(),
+          passwordEnabled: usb.passwordEnabled,
+          togglePassword: () => {
+            if (usb.passwordEnabled) {
+              usb.togglePassword(); // Handles disabling
+            } else {
+              setModal('password_set'); // Open modal to enable
+            }
+          }
         }}
       />
 
@@ -126,11 +183,36 @@ function App() {
         sendClipboard={vnc.sendClipboard}
       />
 
+      <HelpModal
+        open={modal === 'help'}
+        onOpenChange={(v) => v ? setModal('help') : setModal(null)}
+      />
+
       <AboutModal
         open={modal === 'about'}
         onOpenChange={(v) => v ? setModal('about') : setModal(null)}
         view={aboutView}
       />
+
+      <PasswordModal
+        open={modal === 'password_set' || modal === 'password_login'}
+        mode={modal === 'password_set' ? 'set' : 'login'}
+        onOpenChange={(v) => v ? null : setModal(null)}
+        onSave={async (pw) => {
+          if (modal === 'password_set') {
+            await usb.setPassword(pw);
+            setModal(null);
+          } else {
+            // Login Flow
+            setModal(null);
+            // Trigger Reconnect with new password
+            vnc.connect(pw);
+          }
+        }}
+      />
+
+      {/* Performance Stats Overlay */}
+      <StatsOverlay visible={statsVisible} />
 
     </div>
   )

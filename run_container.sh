@@ -8,6 +8,20 @@ echo "---------------------------------------------------"
 echo "  VestaVNC Universal Launcher"
 echo "---------------------------------------------------"
 
+# 0. Parse Arguments
+TOOLKIT_DISABLE="false"
+VNC_NAME="VestaVNC"
+EXTRA_ARGS=()
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --toolkit-disable) TOOLKIT_DISABLE="true" ;;
+        --name-vnc=*) VNC_NAME="${1#*=}" ;;
+        *) EXTRA_ARGS+=("$1") ;;
+    esac
+    shift
+done
+
 # 1. Check for Docker Image
 if [[ "$(docker images -q vesta-vnc 2> /dev/null)" == "" ]]; then
   echo "Image 'vesta-vnc' not found. Attempting to build..."
@@ -15,7 +29,6 @@ if [[ "$(docker images -q vesta-vnc 2> /dev/null)" == "" ]]; then
   exit $?
 fi
 
-# 2. USB / Drive Detection (Host Side)
 # 2. USB / Drive Detection (Host Side)
 # Use arrays for proper argument handling (fixes quoting issues)
 MOUNT_ARGS=()
@@ -53,11 +66,12 @@ else
     if [ -d "/mnt" ]; then MOUNT_ARGS+=(-v "/mnt:/.host_raw"); fi
 fi
 
-# 3. Hot-Swap Arguments (Mount local scripts into container)
-# This allows testing 'start.sh' and 'usb_manager.py' changes WITHOUT rebuilding!
+# 3. Hot-Swap Arguments (Mount local scripts AND UI into container)
+# This allows testing 'start.sh', 'usb_manager.py', AND UI changes WITHOUT rebuilding!
 HOST_DIR=$(pwd)
 # Use array to safely handle paths with spaces if needed
-SWAP_ARGS=(-v "$HOST_DIR/start.sh:/start.sh" -v "$HOST_DIR/usb_manager.py:/usb_manager.py")
+# We mount the entire 'vesta' folder to /vesta so UI changes in dist are instant
+SWAP_ARGS=(-v "$HOST_DIR/start.sh:/start.sh" -v "$HOST_DIR/usb_manager.py:/usb_manager.py" -v "$HOST_DIR/vesta:/vesta")
 
 # 4. Run Container
 echo "---------------------------------------------------"
@@ -72,6 +86,8 @@ docker run --rm -it \
   --shm-size=4g \
   --memory=4g \
   -v /dev:/dev \
+  -e TOOLKIT_DISABLE=$TOOLKIT_DISABLE \
+  -e VNC_NAME="$VNC_NAME" \
   "${MOUNT_ARGS[@]}" \
   "${SWAP_ARGS[@]}" \
   -p 6080:6080 \
@@ -79,4 +95,5 @@ docker run --rm -it \
   -p 6082:6082 \
   -p 6083:6083 \
   -p 6084:6084 \
+  -p 6085:6085 \
   vesta-vnc

@@ -13,6 +13,7 @@ export const useUSB = (baseUrl: string = '/api') => {
     const [loading, setLoading] = useState(false);
     const [usbEnabled, setUsbEnabled] = useState(false);
     const [autoMount, setAutoMount] = useState(false);
+    const [passwordEnabled, setPasswordEnabled] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchFiles = useCallback(async (path: string) => {
@@ -41,9 +42,9 @@ export const useUSB = (baseUrl: string = '/api') => {
             const data = await res.json();
             setUsbEnabled(data.usb_passthrough);
             setAutoMount(data.auto_mount);
+            setPasswordEnabled(data.password_enabled);
         } catch (e: any) {
             console.error(e);
-            // Don't set error here to avoid blocking main UI if just settings fail
         }
     }, [baseUrl]);
 
@@ -66,6 +67,25 @@ export const useUSB = (baseUrl: string = '/api') => {
             setAutoMount(enabled);
         } catch (e) { console.error(e); }
     }, [baseUrl]);
+
+    const setPassword = useCallback(async (password: string) => {
+        const res = await fetch(`${baseUrl}/password`, {
+            method: 'POST',
+            body: JSON.stringify({ password })
+        });
+        if (!res.ok) throw new Error("Failed to set password");
+        setPasswordEnabled(true);
+    }, [baseUrl]);
+
+    const togglePassword = useCallback(async () => { // Actually disable only, or trigger set modal
+        // If enabling, we need input -> Handled by UI triggering setPassword
+        // If disabling:
+        if (passwordEnabled) {
+            const res = await fetch(`${baseUrl}/password_disable`, { method: 'POST' });
+            if (!res.ok) throw new Error("Failed to disable password");
+            setPasswordEnabled(false);
+        }
+    }, [baseUrl, passwordEnabled]);
 
     const downloadFile = (path: string) => {
         window.open(`${baseUrl}/download?path=${encodeURIComponent(path)}`, '_blank');
@@ -158,6 +178,9 @@ export const useUSB = (baseUrl: string = '/api') => {
         fetchDrives,
         fetchAvailableDevices,
         mountDevice,
-        unmountDevice
+        unmountDevice,
+        passwordEnabled,
+        setPassword,
+        togglePassword
     };
 };

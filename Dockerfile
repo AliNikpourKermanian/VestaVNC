@@ -37,9 +37,16 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     util-linux \
     exfat-fuse \
     ntfs-3g \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && adduser root pulse-access \
-    && pip3 install fusepy websockets
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages separately with proper dependencies
+# Note: Using system opencv package to avoid compilation issues
+RUN pip3 install --no-cache-dir \
+    fusepy \
+    websockets==10.4
+
+# Add root to pulse-access group
+RUN adduser root pulse-access || true
 
 # Copy local vestavnc (contains websockify now)
 COPY vesta /vesta
@@ -48,8 +55,8 @@ COPY vesta /vesta
 RUN find /vesta -type f -exec dos2unix {} +
 RUN chmod -R +x /vesta/utils
 
-# Create index alias
-RUN ln -sf /vesta/vnc.html /vesta/index.html
+# Create vnc.html alias pointing to index.html
+RUN ln -sf /vesta/index.html /vesta/vnc.html
 
 # Setup Startup Script
 COPY start.sh /start.sh
@@ -72,6 +79,7 @@ EXPOSE 6081
 EXPOSE 6082
 EXPOSE 6083
 EXPOSE 6084
+EXPOSE 6085
 
 # Start
 CMD ["/start.sh"]

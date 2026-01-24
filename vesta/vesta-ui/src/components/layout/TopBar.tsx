@@ -16,6 +16,10 @@ export function TopBar({ state, onContact, onWebsite, onInfo }: TopBarProps) {
     const isConnected = state.status === 'connected';
     const isError = state.status === 'disconnected' && state.error;
 
+    // Read config
+    const config = (window as any).VESTA_CONFIG || { toolkitDisable: false, vncName: 'VestaVNC' };
+    const { toolkitDisable, vncName } = config;
+
     return (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-2">
             {/* Main Bar */}
@@ -27,13 +31,16 @@ export function TopBar({ state, onContact, onWebsite, onInfo }: TopBarProps) {
             )}>
                 {/* Brand / Menu Trigger */}
                 <button
-                    onClick={() => setMenuOpen(!menuOpen)}
-                    className="flex items-center gap-2 group outline-none"
+                    onClick={() => !toolkitDisable && setMenuOpen(!menuOpen)}
+                    className={cn("flex items-center gap-2 group outline-none", toolkitDisable ? "cursor-default" : "")}
+                    disabled={toolkitDisable}
                 >
                     <span className="text-sm font-bold tracking-tight text-white group-hover:text-blue-400 transition-colors">
-                        VestaVNC
+                        {vncName}
                     </span>
-                    <ChevronDown className={cn("w-3 h-3 text-white/50 transition-transform", menuOpen && "rotate-180")} />
+                    {!toolkitDisable && (
+                        <ChevronDown className={cn("w-3 h-3 text-white/50 transition-transform", menuOpen && "rotate-180")} />
+                    )}
                 </button>
 
                 <div className="w-[1px] h-4 bg-white/10"></div>
@@ -56,7 +63,7 @@ export function TopBar({ state, onContact, onWebsite, onInfo }: TopBarProps) {
             </div>
 
             {/* Vesta Menu "Dock" */}
-            {menuOpen && (
+            {menuOpen && !toolkitDisable && (
                 <div className="flex items-center gap-2 p-1.5 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-200">
                     <Button
                         variant="ghost"
