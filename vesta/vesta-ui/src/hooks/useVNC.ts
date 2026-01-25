@@ -26,7 +26,7 @@ export const useVNC = (container: HTMLDivElement | null, url: string, password?:
         quality: 6,
         compression: 2,
         viewOnly: false,
-        resize: 'scale',
+        resize: 'remote',
         shared: true
     });
 
@@ -65,6 +65,9 @@ export const useVNC = (container: HTMLDivElement | null, url: string, password?:
             });
 
             rfb.addEventListener('clipboard', (e: any) => {
+                const secureMode = (window as any).VESTA_CONFIG?.secureMode;
+                if (secureMode) return; // Disable Clipboard in Secure Mode
+
                 // Native Sync (might require focus)
                 if (navigator.clipboard && e.detail.text) {
                     navigator.clipboard.writeText(e.detail.text).catch(err => {
@@ -147,15 +150,21 @@ export const useVNC = (container: HTMLDivElement | null, url: string, password?:
             }
         }
 
-        window.addEventListener('paste', handlePaste);
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('focus', handleFocus);
+        const secureMode = (window as any).VESTA_CONFIG?.secureMode;
+
+        if (!secureMode) {
+            window.addEventListener('paste', handlePaste);
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('focus', handleFocus);
+        }
 
         return () => {
             rfbModel.current?.disconnect();
-            window.removeEventListener('paste', handlePaste);
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('focus', handleFocus);
+            if (!secureMode) {
+                window.removeEventListener('paste', handlePaste);
+                window.removeEventListener('keydown', handleKeyDown);
+                window.removeEventListener('focus', handleFocus);
+            }
         }
     }, [connect]);
 

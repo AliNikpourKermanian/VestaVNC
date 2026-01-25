@@ -1,17 +1,44 @@
 #!/bin/bash
 
-# Generate Runtime Configuration (Injected from Docker ENV)
+# Parse Arguments to override Env Vars
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --toolkit-disable) TOOLKIT_DISABLE="true" ;;
+        --basic-mode) BASIC_MODE="true" ;;
+        --secure-mode) SECURE_MODE="true" ;;
+        --name-vnc=*) VNC_NAME="${1#*=}" ;;
+        --SecurityTypes=*) SECURITY_TYPES="${1#*=}" ;;
+        *) ;;
+    esac
+    shift
+done
+
+# Defaults
+TOOLKIT_DISABLE=${TOOLKIT_DISABLE:-false}
+BASIC_MODE=${BASIC_MODE:-false}
+SECURE_MODE=${SECURE_MODE:-false}
+VNC_NAME=${VNC_NAME:-VestaVNC}
+SECURITY_TYPES=${SECURITY_TYPES:-VncAuth}
+
+# Generate Runtime Configuration (Injected from Docker ENV/Args)
 echo "Generating runtime configuration..."
+echo "Config Vars -> TOOLKIT_DISABLE=$TOOLKIT_DISABLE, BASIC_MODE=$BASIC_MODE, SECURE_MODE=$SECURE_MODE, VNC_NAME=$VNC_NAME"
 mkdir -p /vesta/assets
 cat <<EOF > /vesta/assets/config.js
 window.VESTA_CONFIG = {
-  toolkitDisable: ${TOOLKIT_DISABLE:-false},
-  vncName: "${VNC_NAME:-VestaVNC}"
+  toolkitDisable: ${TOOLKIT_DISABLE},
+  basicMode: ${BASIC_MODE},
+  secureMode: ${SECURE_MODE},
+  vncName: "${VNC_NAME}"
 };
 EOF
+cat /vesta/assets/config.js # Debug print
 
 # Ensure vnc.html exists (fix for volume mount shadowing Dockerfile symlink)
 ln -sf /vesta/index.html /vesta/vnc.html
+
+# Set System Passwords (root & vesta)
+echo "root:${ROOT_PASSWORD:-vestavnc}" | chpasswd
 
 # Set password for VNC
 mkdir -p ~/.vnc
@@ -40,7 +67,7 @@ chmod 1777 /tmp/.X11-unix
 # Start VNC server (Optimized to 16-bit to prevent CPU starvation)
 echo "Starting VNC server..."
 vncserver -kill :1 2>/dev/null || true
-vncserver :1 -geometry 1280x720 -depth 16 -localhost no -SecurityTypes VncAuth
+vncserver :1 -geometry 1280x720 -depth 16 -localhost no -SecurityTypes $SECURITY_TYPES
 
 # --- PULSEAUDIO (Protected) ---
 echo "Starting PulseAudio (Root Optimized)..."

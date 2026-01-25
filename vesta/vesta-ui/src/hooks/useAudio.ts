@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 export const useAudio = () => {
-    const [micActive, setMicActive] = useState(false);
+    const [micActive, setMicActive] = useState(true); // Default to enabled
     const [speakerActive, setSpeakerActive] = useState(true); // Default to enabled
 
     // Refs to hold instances
@@ -131,21 +131,31 @@ export const useAudio = () => {
         setMicActive(false);
     }, []);
 
-    // Attempt to start speaker on mount since default is active
+    // Attempt to start speaker and mic on mount since default is active
     useEffect(() => {
         let timer: NodeJS.Timeout;
+
+        // Auto-start Speaker
         if (speakerActive) {
-            // Small delay to ensure ports/network are stable on load
             timer = setTimeout(() => {
-                console.log("Audio: Attempting auto-start...");
+                console.log("Audio: Attempting auto-start speaker...");
                 startSpeaker();
+            }, 1000);
+        }
+
+        // Auto-start Mic
+        if (micActive) {
+            setTimeout(() => {
+                console.log("Audio: Attempting auto-start mic...");
+                startMic();
             }, 1000);
         }
 
         return () => {
             clearTimeout(timer);
-            // Cleanup on unmount (essential for StrictMode to avoid double-connections)
+            // Cleanup on unmount
             stopSpeaker();
+            stopMic();
         };
     }, []); // Run once on mount
 

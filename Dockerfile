@@ -82,4 +82,4 @@ EXPOSE 6084
 EXPOSE 6085
 
 # Start
-CMD ["/start.sh"]
+ENTRYPOINT ["/start.sh"]

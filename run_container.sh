@@ -97,4 +97,4 @@ sudo docker run --rm -it \
   -p 6084:6084 \
   -p 6085:6085 \
   vesta-vnc \
-  /bin/bash -c "echo 'root:vestavnc' | chpasswd; echo 'vesta:vestavnc' | chpasswd; rm -f /root/.vnc/passwd; /start.sh --SecurityTypes=None"
+  --SecurityTypes=None

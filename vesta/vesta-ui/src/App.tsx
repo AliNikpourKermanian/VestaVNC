@@ -27,6 +27,10 @@ function App() {
   const [modal, setModal] = useState<null | 'settings' | 'files' | 'clipboard' | 'about' | 'password_set' | 'password_login' | 'help'>(null);
   const [aboutView, setAboutView] = useState<AboutView>('info');
   const [statsVisible, setStatsVisible] = useState(false);
+  const [basicMode, setBasicMode] = useState(() => {
+    const config = (window as any).VESTA_CONFIG;
+    return !!(config?.basicMode || config?.secureMode);
+  });
   const [loginPassword, setLoginPassword] = useState(""); // For inline login
 
   // Determine API URL (FileManager/USB)
@@ -53,6 +57,7 @@ function App() {
     if (config?.vncName) {
       document.title = config.vncName;
     }
+
     if (config?.toolkitDisable) {
       // Hide Favicon (set to transparent pixel)
       const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
@@ -84,12 +89,14 @@ function App() {
       </div>
 
       {/* Status Pill & Vesta Menu */}
-      <TopBar
-        state={vnc.state}
-        onContact={() => { setAboutView('contact'); setModal('about'); }}
-        onWebsite={() => { setAboutView('website'); setModal('about'); }}
-        onInfo={() => { setAboutView('info'); setModal('about'); }}
-      />
+      {!basicMode && (
+        <TopBar
+          state={vnc.state}
+          onContact={() => { setAboutView('contact'); setModal('about'); }}
+          onWebsite={() => { setAboutView('website'); setModal('about'); }}
+          onInfo={() => { setAboutView('info'); setModal('about'); }}
+        />
+      )}
 
       {/* Reconnect / Login Overlay */}
       {vnc.state.status === 'disconnected' && (
@@ -104,7 +111,7 @@ function App() {
 
             <form onSubmit={(e) => { e.preventDefault(); vnc.connect(loginPassword); }} className="space-y-3">
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                Reconnect 
+                Reconnect
               </Button>
             </form>
           </div>
@@ -112,16 +119,17 @@ function App() {
       )}
 
       {/* Floating Dock */}
-      <Dock
-        onClipboard={() => setModal('clipboard')}
-        onFiles={() => setModal('files')}
-        onSettings={() => setModal('settings')}
-        onDisconnect={vnc.disconnect}
-        onFullscreen={toggleFullscreen}
-        onStats={toggleStats}
+      {!basicMode && (
+        <Dock
+          onClipboard={() => setModal('clipboard')}
+          onFiles={() => setModal('files')}
+          onSettings={() => setModal('settings')}
+          onDisconnect={vnc.disconnect}
+          onFullscreen={toggleFullscreen}
+          onStats={toggleStats}
 
-      />
-
+        />
+      )}
 
 
       {/* Modals */}
