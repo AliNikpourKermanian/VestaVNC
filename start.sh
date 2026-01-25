@@ -40,9 +40,8 @@ cat /vesta/assets/config.js # Debug print
 # Ensure vnc.html exists (fix for volume mount shadowing Dockerfile symlink)
 ln -sf /vesta/index.html /vesta/vnc.html
 
-# Set System Passwords (root & vesta)
+# Set System Passwords (root)
 echo "root:$FINAL_PASSWORD" | chpasswd
-echo "vesta:$FINAL_PASSWORD" | chpasswd
 
 # Set password for VNC
 mkdir -p ~/.vnc

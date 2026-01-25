@@ -13,7 +13,7 @@
   - `--SecurityTypes=None`: Explicitly disables security types (handled internally).
   - `--basic-mode`: Hides the Dock and Top Bar (Clipboard **Enabled**).
   - `--secure-mode`: **[NEW]** Hides the Dock and Top Bar AND **Disables Clipboard** (for high security).
-  - `--password-user="mysecret"`: Sets the system password for `root` and `vesta` users (default: `vestavnc`).
+  - `--password-user="mysecret"`: Sets the system password for the `root` user (default: `vestavnc`).
 - **Simplified Execution**: `start.sh` is now the Docker `ENTRYPOINT`, allowing direct flag passing to `docker run`.
 - **System Passwords**: `root` and `vesta` user passwords are automatically set to `vestavnc` (configurable via env vars).
 
