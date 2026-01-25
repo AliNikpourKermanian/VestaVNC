@@ -45,7 +45,7 @@ export function ClipboardModal({ open, onOpenChange, sendClipboard }: ClipboardM
                     </p>
                     <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-sm text-zinc-400">
                         <p>
-                            You can simply use <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-xs text-white border border-white/20">Ctrl+C</kbd> and <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-xs text-white border border-white/20">Ctrl+V</kbd> seamlessly between your PC and Vesta without opening this menu.
+                            You can simply use <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-xs text-white border border-white/20">Ctrl+C</kbd> and <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-xs text-white border border-white/20">Ctrl+V</kbd> seamlessly between your PC and your container without opening this menu.
                         </p>
                     </div>
                     <div className="flex justify-end pt-2">
