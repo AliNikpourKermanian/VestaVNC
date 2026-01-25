@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react'
 import { Dock } from '@/components/layout/Dock'
 import { TopBar } from '@/components/layout/TopBar'
 import { VncScreen } from '@/components/layout/VncScreen'
-import { StatsOverlay } from '@/components/layout/StatsOverlay'
 import { SettingsModal } from '@/components/features/SettingsModal'
 import { FilesModal } from '@/components/features/FilesModal'
 import { ClipboardModal } from '@/components/features/ClipboardModal'
@@ -175,8 +174,6 @@ function App() {
 
 
 
-      {/* Performance Stats Overlay */}
-      <StatsOverlay visible={statsVisible} />
 
     </div>
   )

@@ -78,7 +78,7 @@ export function AboutModal({ open, onOpenChange, view }: AboutModalProps) {
                                     </div>
                                     <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
                                         <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 block mb-1">Build</span>
-                                        <span className="text-sm font-semibold">2026.01.10</span>
+                                        <span className="text-sm font-semibold">2026.01.25</span>
                                     </div>
                                 </div>
                                 <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
