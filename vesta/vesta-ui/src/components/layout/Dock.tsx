@@ -22,9 +22,6 @@ export function Dock({ onClipboard, onFiles, onSettings, onDisconnect, onFullscr
             <Button variant="dock" size="icon" onClick={onFiles} title="Files">
                 <Folder className="w-5 h-5" />
             </Button>
-            <Button variant="dock" size="icon" onClick={onStats} title="Performance Stats">
-                <Activity className="w-5 h-5" />
-            </Button>
             <div className="w-8 h-[1px] bg-white/10 my-1"></div>
             <Button variant="dock" size="icon" onClick={onFullscreen} title="Fullscreen">
                 <Maximize className="w-5 h-5" />
