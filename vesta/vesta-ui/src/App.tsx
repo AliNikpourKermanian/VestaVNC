@@ -7,7 +7,7 @@ import { SettingsModal } from '@/components/features/SettingsModal'
 import { FilesModal } from '@/components/features/FilesModal'
 import { ClipboardModal } from '@/components/features/ClipboardModal'
 import { AboutModal, AboutView } from '@/components/features/AboutModal'
-import { HelpModal } from '@/components/features/HelpModal'
+
 import { PasswordModal } from '@/components/features/PasswordModal'
 import { useVNC } from '@/hooks/useVNC'
 import { useAudio } from '@/hooks/useAudio'
@@ -104,18 +104,8 @@ function App() {
             <p className="text-sm text-white/50">{vnc.state.error || "Connection lost"}</p>
 
             <form onSubmit={(e) => { e.preventDefault(); vnc.connect(loginPassword); }} className="space-y-3">
-              <div className="relative">
-                <input
-                  type="password"
-                  placeholder="Password (if set)"
-                  className="w-full bg-white/10 border border-white/20 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                  value={loginPassword}
-                  onChange={e => setLoginPassword(e.target.value)}
-                  autoFocus
-                />
-              </div>
               <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                Reconnect / Login
+                Reconnect 
               </Button>
             </form>
           </div>
@@ -130,10 +120,10 @@ function App() {
         onDisconnect={vnc.disconnect}
         onFullscreen={toggleFullscreen}
         onStats={toggleStats}
-        onPassword={() => setModal('password_set')}
-        onHelp={() => setModal('help')}
-        passwordEnabled={usb.passwordEnabled}
+
       />
+
+
 
       {/* Modals */}
       <SettingsModal
@@ -148,15 +138,7 @@ function App() {
         }}
         mic={{
           active: audio.micActive,
-          toggleMic: audio.micActive ? audio.stopMic : () => audio.startMic(),
-          passwordEnabled: usb.passwordEnabled,
-          togglePassword: () => {
-            if (usb.passwordEnabled) {
-              usb.togglePassword(); // Handles disabling
-            } else {
-              setModal('password_set'); // Open modal to enable
-            }
-          }
+          toggleMic: audio.micActive ? audio.stopMic : () => audio.startMic()
         }}
       />
 
@@ -183,10 +165,7 @@ function App() {
         sendClipboard={vnc.sendClipboard}
       />
 
-      <HelpModal
-        open={modal === 'help'}
-        onOpenChange={(v) => v ? setModal('help') : setModal(null)}
-      />
+
 
       <AboutModal
         open={modal === 'about'}
@@ -194,22 +173,7 @@ function App() {
         view={aboutView}
       />
 
-      <PasswordModal
-        open={modal === 'password_set' || modal === 'password_login'}
-        mode={modal === 'password_set' ? 'set' : 'login'}
-        onOpenChange={(v) => v ? null : setModal(null)}
-        onSave={async (pw) => {
-          if (modal === 'password_set') {
-            await usb.setPassword(pw);
-            setModal(null);
-          } else {
-            // Login Flow
-            setModal(null);
-            // Trigger Reconnect with new password
-            vnc.connect(pw);
-          }
-        }}
-      />
+
 
       {/* Performance Stats Overlay */}
       <StatsOverlay visible={statsVisible} />

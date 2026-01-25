@@ -81,7 +81,7 @@ echo "---------------------------------------------------"
 
 # Note: "winpty" might be needed for interactive TTY on some Windows Bash setups, 
 # but usually plain docker run works in WSL2.
-docker run --rm -it \
+sudo docker run --rm -it \
   --privileged \
   --shm-size=4g \
   --memory=4g \
@@ -96,4 +96,5 @@ docker run --rm -it \
   -p 6083:6083 \
   -p 6084:6084 \
   -p 6085:6085 \
-  vesta-vnc
+  vesta-vnc \
+  /bin/bash -c "echo 'root:vestavnc' | chpasswd; echo 'vesta:vestavnc' | chpasswd; rm -f /root/.vnc/passwd; /start.sh --SecurityTypes=None"

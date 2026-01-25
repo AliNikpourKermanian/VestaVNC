@@ -1,4 +1,4 @@
 window.VESTA_CONFIG = {
-  toolkitDisable: false,
-  vncName: "VestaVNC"
+  toolkitDisable: true,
+  vncName: "KK Wind"
 };

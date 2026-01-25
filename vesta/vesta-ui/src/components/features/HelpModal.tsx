@@ -46,7 +46,6 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
                             <ul className="space-y-2 text-sm text-white/70 list-disc list-inside">
                                 <li><strong className="text-white">File Transfer:</strong> Use the Folder icon to mount USB drives or upload/download files via the browser bridge.</li>
                                 <li><strong className="text-white">Audio:</strong> Microphone and Speaker are bridged automatically. Toggle in Settings.</li>
-                                <li><strong className="text-white">WebRTC:</strong> Connects via UDP/TCP for near-zero latency video.</li>
                             </ul>
                         </div>
 
@@ -66,10 +65,7 @@ export function HelpModal({ open, onOpenChange }: HelpModalProps) {
                             <h3 className="text-lg font-medium flex items-center gap-2">
                                 <Wifi className="w-5 h-5 text-yellow-400" /> Connection Issues?
                             </h3>
-                            <p className="text-sm text-white/70 bg-yellow-500/10 p-3 rounded border border-yellow-500/20">
-                                If you see "Disconnected", check if the container is running properly.
-                                If you are on a restrictive network, WebRTC might fall back to WebSocket (slower).
-                            </p>
+
                         </div>
 
                     </div>

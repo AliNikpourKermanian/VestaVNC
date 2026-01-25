@@ -119,33 +119,43 @@ export const useVNC = (container: HTMLDivElement | null, url: string, password?:
         connect();
 
         // Native Clipboard Integration
+        // Native Clipboard Integration (Bi-directional)
+
+        // 1. Paste (PC -> VNC) via Event
         const handlePaste = (e: ClipboardEvent) => {
             const text = e.clipboardData?.getData('text');
-            if (text && rfbModel.current) {
-                rfbModel.current.clipboardPasteFrom(text);
-            }
+            if (text && rfbModel.current) rfbModel.current.clipboardPasteFrom(text);
         };
 
+        // 2. Paste (PC -> VNC) via Ctrl+V Fallback
         const handleKeyDown = async (e: KeyboardEvent) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
                 try {
                     const text = await navigator.clipboard.readText();
-                    if (text && rfbModel.current) {
-                        rfbModel.current.clipboardPasteFrom(text);
-                    }
-                } catch (err) {
-                    // Fallback to paste event (handled above)
-                }
+                    if (text && rfbModel.current) rfbModel.current.clipboardPasteFrom(text);
+                } catch (err) { }
             }
         };
 
+        // 3. Sync on Focus (PC -> VNC)
+        const handleFocus = async () => {
+            if (document.hasFocus()) {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if (text && rfbModel.current) rfbModel.current.clipboardPasteFrom(text);
+                } catch (e) { }
+            }
+        }
+
         window.addEventListener('paste', handlePaste);
         window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('focus', handleFocus);
 
         return () => {
             rfbModel.current?.disconnect();
             window.removeEventListener('paste', handlePaste);
             window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('focus', handleFocus);
         }
     }, [connect]);
 

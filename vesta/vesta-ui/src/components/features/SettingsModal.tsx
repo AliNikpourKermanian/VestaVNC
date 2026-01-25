@@ -18,8 +18,6 @@ interface SettingsModalProps {
     mic: {
         active: boolean; // boolean
         toggleMic: () => void;
-        passwordEnabled: boolean;
-        togglePassword: () => void;
     };
 }
 
@@ -72,18 +70,7 @@ export function SettingsModal({ open, onOpenChange, settings, updateSettings, au
                         />
                     </div>
 
-                    <div className="border-t border-white/10 my-2"></div>
 
-                    {/* Password Protection */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 flex items-center justify-center">🔐</div>
-                            <label className="text-sm font-medium text-foreground">Password Protection</label>
-                        </div>
-                        <Switch checked={mic.passwordEnabled} onCheckedChange={mic.togglePassword} />
-                    </div>
-
-                    <div className="border-t border-white/10 my-2"></div>
 
                     {/* Audio Controls */}
                     <div className="flex items-center justify-between">

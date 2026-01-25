@@ -27,25 +27,30 @@ export function ClipboardModal({ open, onOpenChange, sendClipboard }: ClipboardM
         onOpenChange(false);
     }
 
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md bg-zinc-900 border-zinc-800 text-white p-6 rounded-2xl shadow-2xl">
                 <DialogHeader>
-                    <DialogTitle>Clipboard</DialogTitle>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                            <Copy className="w-5 h-5 text-blue-400" />
+                        </div>
+                        <DialogTitle className="text-xl">Smart Clipboard</DialogTitle>
+                    </div>
                 </DialogHeader>
-                <div className="space-y-4">
-                    <p className="text-xs text-muted-foreground">
-                        Text copied in the remote desktop will appear here. Type here and click Send to paste to remote.
+                <div className="space-y-4 pt-2">
+                    <p className="text-sm text-zinc-300 leading-relaxed">
+                        Did you know that the clipboard is <span className="text-white font-medium">smart now</span> and works native?
                     </p>
-                    <textarea
-                        className="flex min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        placeholder="Type here..."
-                    />
-                    <div className="flex justify-end gap-2">
-                        <Button onClick={handleSend}>
-                            <Send className="w-4 h-4 mr-2" /> Send to Remote
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/10 text-sm text-zinc-400">
+                        <p>
+                            You can simply use <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-xs text-white border border-white/20">Ctrl+C</kbd> and <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-xs text-white border border-white/20">Ctrl+V</kbd> seamlessly between your PC and Vesta without opening this menu.
+                        </p>
+                    </div>
+                    <div className="flex justify-end pt-2">
+                        <Button onClick={() => onOpenChange(false)} variant="outline" className="border-white/10 hover:bg-white/5 text-white">
+                            Got it
                         </Button>
                     </div>
                 </div>

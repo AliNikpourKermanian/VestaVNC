@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 export const useAudio = () => {
     const [micActive, setMicActive] = useState(false);
@@ -51,12 +51,23 @@ export const useAudio = () => {
                 }
             };
 
+            ws.onerror = (e) => {
+                console.error("Audio: Speaker WS Error", e);
+            };
+            ws.onclose = (e) => {
+                console.log("Audio: Speaker WS Closed", e.code, e.reason);
+            };
+
             speakerRef.current = { ws, context: ctx, nextTime: 0 };
             setSpeakerActive(true);
 
             // Resume on interaction if needed
             if (ctx.state === 'suspended') {
-                const resume = () => { ctx.resume(); document.removeEventListener('click', resume); };
+                const resume = () => {
+                    console.log("Audio: Resuming context on interaction");
+                    ctx.resume();
+                    document.removeEventListener('click', resume);
+                };
                 document.addEventListener('click', resume);
             }
 
@@ -119,6 +130,25 @@ export const useAudio = () => {
         micRef.current = { ws: null, context: null, stream: null };
         setMicActive(false);
     }, []);
+
+    // Attempt to start speaker on mount since default is active
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (speakerActive) {
+            // Small delay to ensure ports/network are stable on load
+            timer = setTimeout(() => {
+                console.log("Audio: Attempting auto-start...");
+                startSpeaker();
+            }, 1000);
+        }
+
+        return () => {
+            clearTimeout(timer);
+            // Cleanup on unmount (essential for StrictMode to avoid double-connections)
+            stopSpeaker();
+        };
+    }, []); // Run once on mount
+
 
     return {
         micActive,
