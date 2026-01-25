@@ -74,7 +74,7 @@ export function AboutModal({ open, onOpenChange, view }: AboutModalProps) {
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
                                         <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 block mb-1">Version</span>
-                                        <span className="text-sm font-semibold">1.0.0</span>
+                                        <span className="text-sm font-semibold">1.1.0</span>
                                     </div>
                                     <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
                                         <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500 block mb-1">Build</span>
