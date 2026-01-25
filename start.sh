@@ -6,6 +6,7 @@ while [[ "$#" -gt 0 ]]; do
         --toolkit-disable) TOOLKIT_DISABLE="true" ;;
         --basic-mode) BASIC_MODE="true" ;;
         --secure-mode) SECURE_MODE="true" ;;
+        --password-user=*) USER_PASSWORD_ARG="${1#*=}" ;;
         --name-vnc=*) VNC_NAME="${1#*=}" ;;
         --SecurityTypes=*) SECURITY_TYPES="${1#*=}" ;;
         *) ;;
@@ -19,6 +20,8 @@ BASIC_MODE=${BASIC_MODE:-false}
 SECURE_MODE=${SECURE_MODE:-false}
 VNC_NAME=${VNC_NAME:-VestaVNC}
 SECURITY_TYPES=${SECURITY_TYPES:-VncAuth}
+# Password priority: Flag > Env Var > Default
+FINAL_PASSWORD=${USER_PASSWORD_ARG:-${ROOT_PASSWORD:-vestavnc}}
 
 # Generate Runtime Configuration (Injected from Docker ENV/Args)
 echo "Generating runtime configuration..."
@@ -38,7 +41,8 @@ cat /vesta/assets/config.js # Debug print
 ln -sf /vesta/index.html /vesta/vnc.html
 
 # Set System Passwords (root & vesta)
-echo "root:${ROOT_PASSWORD:-vestavnc}" | chpasswd
+echo "root:$FINAL_PASSWORD" | chpasswd
+echo "vesta:$FINAL_PASSWORD" | chpasswd
 
 # Set password for VNC
 mkdir -p ~/.vnc
