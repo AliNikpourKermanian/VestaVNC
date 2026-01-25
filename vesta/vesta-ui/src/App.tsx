@@ -58,7 +58,7 @@ function App() {
       document.title = config.vncName;
     }
 
-    if (config?.toolkitDisable) {
+    if (config?.toolkitDisable || config?.disableWebIcon) {
       // Hide Favicon (set to transparent pixel)
       const link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
       if (link) link.href = 'data:image/x-icon;base64,';
