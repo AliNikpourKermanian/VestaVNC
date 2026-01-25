@@ -13,7 +13,6 @@
   - `--SecurityTypes=None`: Explicitly disables security types (handled internally).
   - `--basic-mode`: Hides the Dock and Top Bar (Clipboard **Enabled**).
   - `--secure-mode`: **[NEW]** Hides the Dock and Top Bar AND **Disables Clipboard** (for high security).
-  - `--disable-webicon`: Removes the favicon (web card icon).
 - **Simplified Execution**: `start.sh` is now the Docker `ENTRYPOINT`, allowing direct flag passing to `docker run`.
 - **System Passwords**: `root` and `vesta` user passwords are automatically set to `vestavnc` (configurable via env vars).
 

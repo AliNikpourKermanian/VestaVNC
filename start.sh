@@ -6,7 +6,6 @@ while [[ "$#" -gt 0 ]]; do
         --toolkit-disable) TOOLKIT_DISABLE="true" ;;
         --basic-mode) BASIC_MODE="true" ;;
         --secure-mode) SECURE_MODE="true" ;;
-        --disable-webicon) DISABLE_WEBICON="true" ;;
         --name-vnc=*) VNC_NAME="${1#*=}" ;;
         --SecurityTypes=*) SECURITY_TYPES="${1#*=}" ;;
         *) ;;
@@ -18,20 +17,18 @@ done
 TOOLKIT_DISABLE=${TOOLKIT_DISABLE:-false}
 BASIC_MODE=${BASIC_MODE:-false}
 SECURE_MODE=${SECURE_MODE:-false}
-DISABLE_WEBICON=${DISABLE_WEBICON:-false}
 VNC_NAME=${VNC_NAME:-VestaVNC}
 SECURITY_TYPES=${SECURITY_TYPES:-VncAuth}
 
 # Generate Runtime Configuration (Injected from Docker ENV/Args)
 echo "Generating runtime configuration..."
-echo "Config Vars -> TOOLKIT_DISABLE=$TOOLKIT_DISABLE, BASIC_MODE=$BASIC_MODE, SECURE_MODE=$SECURE_MODE, DISABLE_WEBICON=$DISABLE_WEBICON, VNC_NAME=$VNC_NAME"
+echo "Config Vars -> TOOLKIT_DISABLE=$TOOLKIT_DISABLE, BASIC_MODE=$BASIC_MODE, SECURE_MODE=$SECURE_MODE, VNC_NAME=$VNC_NAME"
 mkdir -p /vesta/assets
 cat <<EOF > /vesta/assets/config.js
 window.VESTA_CONFIG = {
   toolkitDisable: ${TOOLKIT_DISABLE},
   basicMode: ${BASIC_MODE},
   secureMode: ${SECURE_MODE},
-  disableWebIcon: ${DISABLE_WEBICON},
   vncName: "${VNC_NAME}"
 };
 EOF
