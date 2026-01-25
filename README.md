@@ -174,6 +174,9 @@ cd vesta/vesta-ui
 npm install
 npm run build
 cd ../..
+
+
+Or just use the ./rebuild_ui.sh
 ```
 
 This compiles the React app and outputs static files to `vesta/vesta-ui/dist/`, which are then copied to the Vesta root in the Dockerfile.
@@ -181,11 +184,10 @@ This compiles the React app and outputs static files to `vesta/vesta-ui/dist/`, 
 #### **Step 3: Build the Docker Image**
 ```bash
 # On Linux/macOS/WSL:
-./build_and_run.sh
+./build.sh
+./run_container.sh or ./start.sh
 
-# On Windows PowerShell:
-.\start.ps1
-```
+
 
 The build script will:
 1. Build the Docker image (`vesta-vnc`)
