@@ -201,7 +201,7 @@ Open your browser to: **http://localhost:6080/vnc.html**
 **Default VNC Password**: `netvesta` (can be changed via `VNC_PASSWORD` env var)
 
 ---
-
+```
 ## 🧠 How It Works
 
 ### 1. **Container Initialization** (`start.sh`)
@@ -237,7 +237,6 @@ Browser (getUserMedia) → WebSocket :6081 → Socat → PulseAudio VNC_Mic → 
 **Speaker (Container → Browser)**:
 ```
 Apps → PulseAudio VNC_Speaker → Socat → WebSocket :6082 → Browser (Audio Element)
-```
 
 ### 4. **Frontend Architecture**
 The React UI uses:
@@ -307,7 +306,6 @@ Interested in how VestaVNC works under the hood?
 - **Tailwind CSS**: https://tailwindcss.com/docs
 
 ---
-```
 
 <div align="center">
 
