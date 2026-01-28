@@ -235,7 +235,6 @@ Browser (getUserMedia) → WebSocket :6081 → Socat → PulseAudio VNC_Mic → 
 ```
 
 **Speaker (Container → Browser)**:
-```
 Apps → PulseAudio VNC_Speaker → Socat → WebSocket :6082 → Browser (Audio Element)
 
 ### 4. **Frontend Architecture**
