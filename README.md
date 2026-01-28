@@ -307,6 +307,7 @@ Interested in how VestaVNC works under the hood?
 - **Tailwind CSS**: https://tailwindcss.com/docs
 
 ---
+```
 
 <div align="center">
 
